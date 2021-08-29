@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol SimpleTracerLogger: class {
-    func logTrace(_ trace: String)
+    func logTrace(_ step: TraceStep)
 }
 
 public class SimpleTracer: NSObject {
@@ -30,9 +30,9 @@ public class SimpleTracer: NSObject {
     private var sendTimer: Timer?
     private var sendTimeoutTimer: Timer?
     
-    public private(set) var result: String = ""
+    public private(set) var result: [TraceStep] = []
     public weak var logger: SimpleTracerLogger?
-    public var completion: ((String) -> Void)?
+    public var completion: (([TraceStep]) -> Void)?
     
     public init(host: String) {
         self.host = host
@@ -45,7 +45,7 @@ public class SimpleTracer: NSObject {
     public static func trace(host: String,
                              logger: SimpleTracerLogger? = nil,
                              maxTraceTTL: Int = 30,
-                             completion: ((String) -> Void)?) -> SimpleTracer {
+                             completion: (([TraceStep]) -> Void)?) -> SimpleTracer {
         let tracer = SimpleTracer(host: host)
         tracer.logger = logger
         tracer.maxTraceTTL = maxTraceTTL
@@ -74,11 +74,20 @@ public class SimpleTracer: NSObject {
     }
 }
 
+public enum TraceStep {
+    case start(destinationIP: String)
+    case router(step: UInt16, ip: String, duration: Int)
+    case routerDoesNotRespond(step: UInt16)
+    case finished(step: UInt16, destinationIP: String, latency: Int)
+    case ttlExceedMax(ttl: Int)
+    case failed
+}
+
 // MARK: - Private
 private extension SimpleTracer {
-    func appendResult(_ result: String) {
-        self.result.append(result)
-        logger?.logTrace(result)
+    func appendResult(step: TraceStep) {
+        self.result.append(step)
+        logger?.logTrace(step)
         #if DEBUG
         NSLog("SimpleTracer: %@", result)
         #endif
@@ -87,7 +96,7 @@ private extension SimpleTracer {
     func sendPing() -> Bool {
         self.currentTTL! += 1
         if self.currentTTL! > maxTraceTTL {
-            appendResult("TTL exceed the Max, stop tracing")
+            appendResult(step: .ttlExceedMax(ttl: self.currentTTL!))
             stop()
             return false
         }
@@ -111,18 +120,18 @@ private extension SimpleTracer {
     
     @objc
     func checkSingleRoundTimeout() {
-        var msg: String = ""
-        switch self.packetCountPerTTL! {
-        case 0:
-            msg = "#\(sendSequence!) *  *  *\n"
-        case 1:
-            msg = "  *  *\n"
-        case 2:
-            msg = "  *\n"
-        default:
-            break
-        }
-        appendResult(msg)
+//        var msg: String = ""
+//        switch self.packetCountPerTTL! {
+//        case 0:
+//            msg = "#\(sendSequence!) *  *  *\n"
+//        case 1:
+//            msg = "  *  *\n"
+//        case 2:
+//            msg = "  *\n"
+//        default:
+//            break
+//        }
+        appendResult(step: .routerDoesNotRespond(step: sendSequence!))
         _ = sendPing()
     }
 }
@@ -164,7 +173,7 @@ extension SimpleTracer: SimplePingDelegate {
         ipAddress = SimpleTracer.displayAddressForAddress(address: address as NSData)
         let msg = "Start tracing \(host): \(ipAddress ?? "* * *")\n"
         NSLog(msg)
-        appendResult(msg)
+        appendResult(step: .start(destinationIP: ipAddress ?? "* * *"))
         
         currentTTL = 1
         sendPing(withTTL: currentTTL!)
@@ -173,7 +182,7 @@ extension SimpleTracer: SimplePingDelegate {
     public func simplePing(_ pinger: SimplePing, didFailWithError error: Error) {
         let msg = "Failed to trace \(host): \(error.localizedDescription)"
         NSLog(msg)
-        appendResult(msg)
+        appendResult(step: .failed)
         stop()
     }
     
@@ -185,7 +194,7 @@ extension SimpleTracer: SimplePingDelegate {
     
     public func simplePing(_ pinger: SimplePing, didFailToSendPacket packet: Data, sequenceNumber: UInt16, error: Error) {
         let msg = "#\(sequenceNumber) send \(packet) failed: \(error.localizedDescription)"
-        appendResult(msg)
+        appendResult(step: .failed)
     }
     
     public func simplePing(_ pinger: SimplePing, didReceivePingResponsePacket packet: Data, sequenceNumber: UInt16) {
@@ -194,13 +203,13 @@ extension SimpleTracer: SimplePingDelegate {
         let interval = Date().timeIntervalSince(startDate)
         let responsedMsg = "### Host responsed, latency (ms): \(interval * 1000) ms\n"
         let receivedMsg = "#\(sequenceNumber) Data received, size=\(packet.count)\n"
-        appendResult(responsedMsg + receivedMsg)
+//        appendResult(responsedMsg + receivedMsg)
         sendTimeoutTimer?.invalidate()
         
         // Complete
         guard sequenceNumber == sendSequence, let ipAddress = ipAddress else { return }
         let completedMsg = "#\(sequenceNumber) reach the destination \(ipAddress), trace completed. It's simple! Right?\n"
-        appendResult(completedMsg)
+        appendResult(step: .finished(step: sequenceNumber, destinationIP: ipAddress, latency: Int(interval * 1000)))
         
         stop()
     }
@@ -214,15 +223,15 @@ extension SimpleTracer: SimplePingDelegate {
             icmpSrcAddress = srcAddr
             self.packetCountPerTTL! += 1
             let msg = String(format: "#\(sendSequence!)) \(srcAddr)     %0.3lf ms", interval * 1000)
-            appendResult(msg)
+            appendResult(step: .router(step: sendSequence!, ip: srcAddr, duration: Int(interval * 1000)))
         } else {
             self.packetCountPerTTL! += 1
-            appendResult(String(format: "    %0.3lf ms", interval * 1000))
+//            appendResult(String(format: "    %0.3lf ms", interval * 1000))
         }
         
         if packetCountPerTTL == 3 {
             invalidSendTimer()
-            appendResult("\n")
+//            appendResult("\n")
             _ = sendPing()
         }
     }
