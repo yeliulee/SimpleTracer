@@ -53,8 +53,20 @@ class ViewController: UIViewController {
     
     @IBAction func startTraceAction(_ sender: Any) {
         resultTextView.text = "Start Trace, good to go."
-        SimpleTracer.trace(host: testCase.host, logger: self, maxTraceTTL: 15) { [weak self] (result) in
-            self?.resultTextView.text = result
+        SimpleTracer.trace(host: testCase.host, maxTraceTTL: 15) { [weak self] (result) in
+            switch result {
+            case .start(let host, let ip, let ttl):
+                self?.resultTextView.text = "Start tracing \(host): \(ip) ttl: \(ttl)"
+            case .router(let step, let ip, let duration):
+                self?.resultTextView.text += "#\(step) \(ip)\t\(duration)ms"
+            case .routerDoesNotRespond(let step):
+                self?.resultTextView.text += "#\(step) * * *"
+            case .finished(let step, let ip, let latency):
+                self?.resultTextView.text += "#\(step) \(ip)\tlatency: \(latency)ms"
+            case .failed(let error):
+                self?.resultTextView.text += error
+            }
+
             print(result)
             /**
              Start tracing www.bearychat.com: 54.223.220.218
@@ -79,12 +91,4 @@ class ViewController: UIViewController {
         }
     }
     
-}
-
-extension ViewController: SimpleTracerLogger {
-    func logTrace(_ trace: String) {
-        DispatchQueue.main.async {
-            self.resultTextView.text += trace
-        }
-    }
 }
