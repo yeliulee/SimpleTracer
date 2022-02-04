@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SimplePing
 import os
 
 public protocol SimpleTracerLogger: AnyObject {
