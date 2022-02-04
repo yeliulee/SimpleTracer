@@ -12,12 +12,14 @@ let package = Package(
             targets: ["SimpleTracer"]),
     ],
     dependencies: [
-        .package(name: "SimplePing", url: "https://github.com/IGRSoft/SimplePing.git", from: "0.0.1")
+        .package(
+            url: "https://github.com/IGRSoft/SimplePing.git",
+            from: "0.0.2")
     ],
     targets: [
         .target(
             name: "SimpleTracer",
-            dependencies: ["SimplePing"]
+            dependencies: [.product(name: "SimplePing", package: "SimplePing")]
         )
     ],
     swiftLanguageVersions: [.v5]

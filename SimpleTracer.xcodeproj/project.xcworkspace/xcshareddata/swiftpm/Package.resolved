@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "SimplePing",
-        "repositoryURL": "https://github.com/IGRSoft/SimplePing",
+        "repositoryURL": "https://github.com/IGRSoft/SimplePing.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "cbce62d9a9b257ddaa5ea81e2abf73909faa994c",
-          "version": null
+          "version": "0.0.1"
         }
       },
       {
@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/IGRSoft/SimpleTracer",
         "state": {
           "branch": "master",
-          "revision": "50c6482802881d1a2c9abecbe0c268446a8bffb3",
+          "revision": "3303f8a154fb648d213f23cef8ba563d2be21877",
           "version": null
         }
       }
