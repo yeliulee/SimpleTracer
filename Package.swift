@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -12,11 +12,7 @@ let package = Package(
             targets: ["SimpleTracer"]),
     ],
     dependencies: [
-        .package(
-            name: "SimpleTracer",
-            url: "https://github.com/IGRSoft/SimplePing",
-            .branch("master")
-        )
+        .package(name: "SimplePing", url: "https://github.com/IGRSoft/SimplePing.git", from: "0.0.1")
     ],
     targets: [
         .target(

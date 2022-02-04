@@ -17,6 +17,7 @@
 		A56C000327A84D3F00CB137B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56C000227A84D3F00CB137B /* ContentView.swift */; };
 		A56C000527A84D4100CB137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A56C000427A84D4100CB137B /* Assets.xcassets */; };
 		A56C000827A84D4100CB137B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A56C000727A84D4100CB137B /* Preview Assets.xcassets */; };
+		A589FDA227AD7AF6005A2E3C /* SimpleTracer in Frameworks */ = {isa = PBXBuildFile; productRef = A589FDA127AD7AF6005A2E3C /* SimpleTracer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A589FDA227AD7AF6005A2E3C /* SimpleTracer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,6 +160,9 @@
 			dependencies = (
 			);
 			name = Demo;
+			packageProductDependencies = (
+				A589FDA127AD7AF6005A2E3C /* SimpleTracer */,
+			);
 			productName = Demo;
 			productReference = 07AF13812178AD350064D404 /* Demo.app */;
 			productType = "com.apple.product-type.application";
@@ -210,7 +215,7 @@
 			);
 			mainGroup = 07AF134B217889810064D404;
 			packageReferences = (
-				A5E5792E27AD785700E44169 /* XCRemoteSwiftPackageReference "SimpleTracer" */,
+				A589FDA027AD7AF6005A2E3C /* XCRemoteSwiftPackageReference "SimpleTracer" */,
 			);
 			productRefGroup = 07AF1356217889820064D404 /* Products */;
 			projectDirPath = "";
@@ -599,7 +604,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A5E5792E27AD785700E44169 /* XCRemoteSwiftPackageReference "SimpleTracer" */ = {
+		A589FDA027AD7AF6005A2E3C /* XCRemoteSwiftPackageReference "SimpleTracer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/IGRSoft/SimpleTracer";
 			requirement = {
@@ -608,6 +613,14 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A589FDA127AD7AF6005A2E3C /* SimpleTracer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A589FDA027AD7AF6005A2E3C /* XCRemoteSwiftPackageReference "SimpleTracer" */;
+			productName = SimpleTracer;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 07AF134C217889820064D404 /* Project object */;
 }
