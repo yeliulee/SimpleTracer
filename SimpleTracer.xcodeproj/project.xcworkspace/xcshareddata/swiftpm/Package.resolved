@@ -2,11 +2,20 @@
   "object": {
     "pins": [
       {
+        "package": "SimplePing",
+        "repositoryURL": "https://github.com/IGRSoft/SimplePing",
+        "state": {
+          "branch": "master",
+          "revision": "cbce62d9a9b257ddaa5ea81e2abf73909faa994c",
+          "version": null
+        }
+      },
+      {
         "package": "SimpleTracer",
         "repositoryURL": "https://github.com/IGRSoft/SimpleTracer",
         "state": {
           "branch": "master",
-          "revision": "39e3175c006b9e30a3d02dbb98ea3e3eb1a688f3",
+          "revision": "50c6482802881d1a2c9abecbe0c268446a8bffb3",
           "version": null
         }
       }

@@ -210,7 +210,7 @@
 			);
 			mainGroup = 07AF134B217889810064D404;
 			packageReferences = (
-				A56C001127A85D3100CB137B /* XCRemoteSwiftPackageReference "SimpleTracer" */,
+				A5E5792E27AD785700E44169 /* XCRemoteSwiftPackageReference "SimpleTracer" */,
 			);
 			productRefGroup = 07AF1356217889820064D404 /* Products */;
 			projectDirPath = "";
@@ -599,7 +599,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A56C001127A85D3100CB137B /* XCRemoteSwiftPackageReference "SimpleTracer" */ = {
+		A5E5792E27AD785700E44169 /* XCRemoteSwiftPackageReference "SimpleTracer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/IGRSoft/SimpleTracer";
 			requirement = {

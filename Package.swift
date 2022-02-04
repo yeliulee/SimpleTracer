@@ -13,6 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            name: "SimpleTracer",
             url: "https://github.com/IGRSoft/SimplePing",
             .branch("master")
         )
