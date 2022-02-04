@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -209,6 +209,9 @@
 				Base,
 			);
 			mainGroup = 07AF134B217889810064D404;
+			packageReferences = (
+				A56C001127A85D3100CB137B /* XCRemoteSwiftPackageReference "SimpleTracer" */,
+			);
 			productRefGroup = 07AF1356217889820064D404 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -594,6 +597,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A56C001127A85D3100CB137B /* XCRemoteSwiftPackageReference "SimpleTracer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/IGRSoft/SimpleTracer";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 07AF134C217889820064D404 /* Project object */;
 }

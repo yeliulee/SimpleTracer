@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SimpleTracer",
+        "repositoryURL": "https://github.com/IGRSoft/SimpleTracer",
+        "state": {
+          "branch": "master",
+          "revision": "39e3175c006b9e30a3d02dbb98ea3e3eb1a688f3",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -11,9 +11,16 @@ let package = Package(
             name: "SimpleTracer",
             targets: ["SimpleTracer"]),
     ],
+    dependencies: [
+        .package(
+            url: "https://github.com/IGRSoft/SimplePing",
+            .branch("master")
+        )
+    ],
     targets: [
         .target(
-            name: "SimpleTracer"
+            name: "SimpleTracer",
+            dependencies: ["SimplePing"]
         )
     ],
     swiftLanguageVersions: [.v5]

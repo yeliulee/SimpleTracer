@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SimplePing",
+        "repositoryURL": "https://github.com/IGRSoft/SimplePing",
+        "state": {
+          "branch": "master",
+          "revision": "cbce62d9a9b257ddaa5ea81e2abf73909faa994c",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
