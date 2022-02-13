@@ -12,7 +12,7 @@ import SimpleTracer
 class ViewController: UIViewController {
     
     enum TraceTestCase: Int {
-        case bearychat
+        case apple
         case github
         case google
         case bing
@@ -20,7 +20,7 @@ class ViewController: UIViewController {
         
         var host: String {
             switch self {
-            case .bearychat: return "bearychat.com"
+            case .apple: return "apple.com"
             case .github: return "github.com"
             case .google: return "google.com"
             case .bing: return "bing.com"
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var hostLabel: UILabel!
     @IBOutlet weak var resultTextView: UITextView!
     
-    private var testCase: TraceTestCase = .bearychat {
+    private var testCase: TraceTestCase = .apple {
         didSet {
             hostLabel.text = testCase.host
         }
@@ -52,20 +52,9 @@ class ViewController: UIViewController {
     }
     
     @IBAction func startTraceAction(_ sender: Any) {
-        resultTextView.text = "Start Trace, good to go."
+        resultTextView.text = ""
         SimpleTracer.trace(host: testCase.host, maxTraceTTL: 15) { [weak self] (result) in
-            switch result {
-            case .start(let host, let ip, let ttl):
-                self?.resultTextView.text = "Start tracing \(host): \(ip) ttl: \(ttl)"
-            case .router(let step, let ip, let duration):
-                self?.resultTextView.text += "#\(step) \(ip)\t\(duration)ms"
-            case .routerDoesNotRespond(let step):
-                self?.resultTextView.text += "#\(step) * * *"
-            case .finished(let step, let ip, let latency):
-                self?.resultTextView.text += "#\(step) \(ip)\tlatency: \(latency)ms"
-            case .failed(let error):
-                self?.resultTextView.text += error
-            }
+            self?.resultTextView.text += "\(result.info())\n"
 
             print(result)
             /**

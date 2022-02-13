@@ -23,10 +23,10 @@ public class SimpleTracer: NSObject {
     private var ipAddress: String?
     private var icmpSrcAddress: String?
     
-    private var currentTTL: Int?
+    private var currentTTL: Int = 0
     private var packetCountPerTTL: Int?
     private var maxTraceTTL: Int = 30
-    private var sendSequence: UInt16?
+    private var sendSequence: UInt16 = 0
     
     private var startDate: Date?
     private var sendTimer: Timer?
@@ -79,6 +79,23 @@ public enum TraceStep {
     case failed(error: String)
 }
 
+extension TraceStep {
+    public func info() -> String {
+        switch self {
+        case .start(let host, let ip, let ttl):
+            return "Start tracing \(host): \(ip) ttl: \(ttl)"
+        case .router(let step, let ip, let duration):
+            return "#\(step) \(ip) \t\(duration)ms"
+        case .routerDoesNotRespond(let step):
+            return "#\(step) * * *"
+        case .finished(let step, let ip, let latency):
+            return "#\(step) \(ip) \t\(latency)ms\nDone!"
+        case .failed(let error):
+            return error
+        }
+    }
+}
+
 // MARK: - Private
 private extension SimpleTracer {
     func appendResult(step: TraceStep) {
@@ -87,22 +104,22 @@ private extension SimpleTracer {
     }
     
     func sendPing() -> Bool {
-        self.currentTTL! += 1
-        if self.currentTTL! > maxTraceTTL {
+        self.currentTTL += 1
+        if self.currentTTL > maxTraceTTL {
             stop()
             
             return false
         }
         
-        sendPing(withTTL: self.currentTTL!)
+        sendPing(withTTL: self.currentTTL)
         return true
     }
     
     func sendPing(withTTL ttl: Int) {
         packetCountPerTTL = 0
         
-        pinger?.setTTL(Int32(ttl))
-        pinger?.send()
+        pinger?.setTTL(ttl)
+        pinger?.sendPing()
         
         sendTimer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(checkSingleRoundTimeout), userInfo: nil, repeats: false)
     }
@@ -114,7 +131,7 @@ private extension SimpleTracer {
     
     @objc
     func checkSingleRoundTimeout() {
-        appendResult(step: .routerDoesNotRespond(step: sendSequence!))
+        appendResult(step: .routerDoesNotRespond(step: sendSequence))
         _ = sendPing()
     }
 }
@@ -128,11 +145,11 @@ extension SimpleTracer {
     ///
     /// - returns: A string representation of that address.
     
-    static func displayAddressForAddress(address: NSData) -> String {
+    static func displayAddressForAddress(address: Data) -> String {
         var hostStr = [Int8](repeating: 0, count: Int(NI_MAXHOST))
         
-        let success = getnameinfo(address.bytes.assumingMemoryBound(to: sockaddr.self),
-                                  socklen_t(address.length),
+        let success = getnameinfo(address.unsafeBytes.assumingMemoryBound(to: sockaddr.self),
+                                  socklen_t(address.count),
                                   &hostStr,
                                   socklen_t(hostStr.count),
                                   nil,
@@ -151,37 +168,37 @@ extension SimpleTracer {
 
 // MARK: - SimplePingDelegate
 extension SimpleTracer: SimplePingDelegate {
-    public func simplePing(_ pinger: SimplePing, didStartWithAddress address: Data) {
-        ipAddress = SimpleTracer.displayAddressForAddress(address: address as NSData)
+    public func pinger(_ pinger: Ping, didStartWithAddress address: String) {
+        ipAddress = address
         let msg = "\(ipAddress ?? "* * *")"
         os_log(.debug, "Start tracing \(self.host): \(msg)")
         NSLog(msg)
-        appendResult(step: .start(host: host, ip: msg, ttl: currentTTL!))
+        appendResult(step: .start(host: host, ip: msg, ttl: currentTTL))
         
         currentTTL = 1
-        sendPing(withTTL: currentTTL!)
+        sendPing(withTTL: currentTTL)
     }
     
-    public func simplePing(_ pinger: SimplePing, didFailWithError error: Error) {
+    public func pinger(_ pinger: Ping, didFailWithError error: Error) {
         let msg = error.localizedDescription
         os_log(.debug, "Failed to trace \(self.host): \(msg)")
         appendResult(step: .failed(error: msg))
         stop()
     }
     
-    public func simplePing(_ pinger: SimplePing, didSendPacket packet: Data, sequenceNumber: UInt16) {
-        os_log(.debug, "#\(sequenceNumber) Data sent, size=\(packet.count)")
-        sendSequence = sequenceNumber
+    public func pinger(_ pinger: Ping, didSendPacket packet: Data, sequence: UInt16) {
+        os_log(.debug, "#\(sequence) Data sent, size=\(packet.count)")
+        sendSequence = sequence
         startDate = Date()
     }
     
-    public func simplePing(_ pinger: SimplePing, didFailToSendPacket packet: Data, sequenceNumber: UInt16, error: Error) {
+    public func pinger(_ pinger: Ping, didFailToSendPacket packet: Data, sequence: UInt16, error: Error) {
         let msg = error.localizedDescription
-        os_log(.debug, "#\(sequenceNumber) send \(packet) failed: \(msg)")
+        os_log(.debug, "#\(sequence) send \(packet) failed: \(msg)")
         appendResult(step: .failed(error: msg))
     }
     
-    public func simplePing(_ pinger: SimplePing, didReceivePingResponsePacket packet: Data, sequenceNumber: UInt16) {
+    public func pinger(_ pinger: Ping, didReceivePingResponsePacket packet: Data, sequence: UInt16, from: String) {
         invalidSendTimer()
         guard let startDate = startDate else { return }
         
@@ -189,25 +206,24 @@ extension SimpleTracer: SimplePingDelegate {
         sendTimeoutTimer?.invalidate()
         
         // Complete
-        guard sequenceNumber == sendSequence, let ipAddress = ipAddress else { return }
-        let msg = "#\(sequenceNumber) reach the destination \(ipAddress), trace completed. It's simple! Right?\n"
+        guard sendSequence == sequence, let ipAddress = ipAddress else { return }
+        let msg = "#\(sequence) reach the destination \(ipAddress), trace completed. It's simple! Right?\n"
         os_log(.debug, "\(msg)")
-        appendResult(step: .finished(step: sequenceNumber, ip: ipAddress, latency: Int(interval * 1000)))
+        appendResult(step: .finished(step: sequence, ip: ipAddress, latency: Int(interval * 1000)))
         
         stop()
     }
     
-    public func simplePing(_ pinger: SimplePing, didReceiveUnexpectedPacket packet: Data) {
+    public func pinger(_ pinger: Ping, didReceiveUnexpectedPacket packet: Data, from: String) {
         assert(startDate != nil)
         let interval = Date().timeIntervalSince(startDate!)
         
-        let srcAddr = pinger.srcAddr(inIPv4Packet: packet)
-        if packetCountPerTTL == 0 {
+        if packetCountPerTTL == 0, let srcAddr = packet.srcAddr() {
             icmpSrcAddress = srcAddr
             self.packetCountPerTTL! += 1
             let msg = interval * 1000
-            os_log(.debug, "\(String(format: "#\(sendSequence!)) \(srcAddr)     %0.3lf ms", msg))")
-            appendResult(step: .router(step: sendSequence!, ip: srcAddr, duration: Int(msg)))
+            os_log(.debug, "\(String(format: "#\(sendSequence)) \(srcAddr)     %0.3lf ms", msg))")
+            appendResult(step: .router(step: sendSequence, ip: srcAddr, duration: Int(msg)))
         } else {
             self.packetCountPerTTL! += 1
         }
