@@ -218,7 +218,7 @@ extension SimpleTracer: SimplePingDelegate {
         assert(startDate != nil)
         let interval = Date().timeIntervalSince(startDate!)
         
-        if packetCountPerTTL == 0, let srcAddr = packet.srcAddr() {
+        if packetCountPerTTL == 0, let srcAddr = packet.srcAddress() {
             icmpSrcAddress = srcAddr
             self.packetCountPerTTL! += 1
             let msg = interval * 1000
