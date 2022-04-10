@@ -13,6 +13,7 @@
 		07AF13892178AD350064D404 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07AF13872178AD350064D404 /* Main.storyboard */; };
 		07AF138B2178AD370064D404 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07AF138A2178AD370064D404 /* Assets.xcassets */; };
 		07AF138E2178AD370064D404 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07AF138C2178AD370064D404 /* LaunchScreen.storyboard */; };
+		A535F5D727B957310096D0C3 /* SimpleTracer in Frameworks */ = {isa = PBXBuildFile; productRef = A535F5D627B957310096D0C3 /* SimpleTracer */; };
 		A56C000127A84D3F00CB137B /* DemoMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56C000027A84D3F00CB137B /* DemoMacApp.swift */; };
 		A56C000327A84D3F00CB137B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A56C000227A84D3F00CB137B /* ContentView.swift */; };
 		A56C000527A84D4100CB137B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A56C000427A84D4100CB137B /* Assets.xcassets */; };
@@ -59,6 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A535F5D727B957310096D0C3 /* SimpleTracer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +74,7 @@
 				07AF1362217889820064D404 /* Tests */,
 				A56CFFFF27A84D3F00CB137B /* DemoMac */,
 				07AF1356217889820064D404 /* Products */,
+				A535F5D527B957310096D0C3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -105,6 +108,13 @@
 				07AF138F2178AD370064D404 /* Info.plist */,
 			);
 			path = Demo;
+			sourceTree = "<group>";
+		};
+		A535F5D527B957310096D0C3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A56C000627A84D4100CB137B /* Preview Content */ = {
@@ -180,6 +190,9 @@
 			dependencies = (
 			);
 			name = DemoMac;
+			packageProductDependencies = (
+				A535F5D627B957310096D0C3 /* SimpleTracer */,
+			);
 			productName = DemoMac;
 			productReference = A56CFFFE27A84D3F00CB137B /* DemoMac.app */;
 			productType = "com.apple.product-type.application";
@@ -615,6 +628,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A535F5D627B957310096D0C3 /* SimpleTracer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A589FDA027AD7AF6005A2E3C /* XCRemoteSwiftPackageReference "SimpleTracer" */;
+			productName = SimpleTracer;
+		};
 		A589FDA127AD7AF6005A2E3C /* SimpleTracer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A589FDA027AD7AF6005A2E3C /* XCRemoteSwiftPackageReference "SimpleTracer" */;

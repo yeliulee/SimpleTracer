@@ -7,11 +7,24 @@
 //
 
 import SwiftUI
+import SimpleTracer
 
 struct ContentView: View {
+    @State var traceLog: String = ""
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            Button("Start") {
+                SimpleTracer.trace(host: "apple.com", maxTraceTTL: 15) { (result) in
+                    traceLog += "\(result.info())\n"
+                    
+                    print(result)
+                }
+            }
+            
+            Text(traceLog)
+        }.padding()
+            .frame(width: 330, height: 400, alignment: .top)
     }
 }
 
